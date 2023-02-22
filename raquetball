@@ -1,0 +1,158 @@
+float circleX;
+float circleY;
+int GAP = 30;
+float paddleX;
+int paddleY;
+float xDirection;
+float yDirection;
+int point;
+int paddleWidth=0;
+int paddleHeight = 20;
+
+
+void setup() {
+  size(800, 400);
+  textAlign(CENTER);
+  paddleY = height-(GAP+paddleHeight/2);
+  reset();
+}
+void draw() {
+  //This ensures that the start screen is displayed at the beginning
+  //When the function returns zero, the start screen will be displayed again until a button is pressed
+  if (paddleWidth==0) {
+    paddleWidth = startScreen();
+  } else {
+    conditions();
+    //This displays the "Game Over" screen
+    if (circleY>=height) {
+      fill(100, 100, 255);
+      textSize(40);
+      text("Game Over", 400, 150);
+      textSize(25);
+      text("Press any key to start over", 400, 250);
+      if (keyPressed) {
+        reset();
+      }
+    } else {
+      //This runs the game
+      gameRun(paddleWidth, paddleHeight, xDirection);
+    }
+  }
+}
+
+void conditions() {
+  //This makes sure that the paddle stay within the window
+  if (mouseX<=(paddleWidth/2)) {
+    paddleX = paddleWidth/2;
+  } else if (mouseX>=(width-(paddleWidth/2))) {
+    paddleX = width-(paddleWidth/2);
+  } else {
+    paddleX = mouseX;
+  }
+
+  //These make the ball bounce off the walls
+  if ((circleX<=10)||(circleX>=(width-10))) {
+    xDirection=xDirection*-1;
+  }
+  if (circleY<=10) {
+    yDirection=yDirection*-1;
+  }
+
+  //This ensures that the ball speeds up when it hits the paddle
+  if ((circleY==(paddleY-20)) && (circleX>=(mouseX-(paddleWidth/2))) && (circleX<=(mouseX+(paddleWidth/2)))) {
+    yDirection=yDirection*-1.15;
+    xDirection = xDirection*1.25;
+    point = point+1;
+  }
+}
+
+void gameRun(int paddleW, int paddleH, float xDirection) {
+  int speed = 0;
+  if (mousePressed) {
+  } else {
+    background(150);
+  }
+  //This makes the ball
+  fill(random(0, 255), random(0, 255), random(0, 255), random(0, 255));
+  circle(circleX, circleY, 20);
+
+  //This makes the paddle
+  rectMode(CENTER);
+  fill(255);
+  rect(paddleX, paddleY, paddleW, paddleH);
+
+  //This adjusts the speed of the ball so that the bigger the paddle, the faster the ball
+  if (paddleWidth==100) {
+    speed = 1;
+  } else if (paddleWidth==200) {
+    speed=2;
+  } else if (paddleWidth==300) {
+    speed=3;
+  }
+
+  //This makes the ball move
+  circleY=circleY+(yDirection*speed);
+  circleX=circleX+(xDirection*speed);
+
+  //This displays the points
+  textSize(28);
+  fill(50, 100, 200);
+  text("Points:"+point, 700, 40);
+}
+
+void reset() {
+  //This places the ball in a random position
+  circleX = random(10, width-10);
+  circleY = 100;
+  //This starts the ball in a random direction
+  xDirection = random(-3, 3);
+  yDirection = 1;
+  //This starts the points off at zero
+  point = 0;
+  //This resets the paddle width so the start screen is displayed
+  paddleWidth = 0;
+}
+
+int startScreen() {
+  rectMode(CORNER);
+  background(255);
+  //This displays the title of the game
+  fill(0, 150, 0);
+  textSize(40);
+  text("Raquetball", width/2, 100);
+  //This displays the instructions to the game
+  textSize(15);
+  fill(0);
+  text("How to play: Choose the size of paddle that you want. The bigger the paddle, the faster the ball!", width/2, 150);
+  text("Move the paddle back and forth but don't let the ball hit the bottom.", width/2, 170);
+  text("Use the paddle to stop the ball from falling. Hold down the mouse while playing for a surprise!", width/2, 190);
+  text("Choose the size of your paddle:", width/2, 210);
+
+  //The 100 pixel button
+  textSize(25);
+  fill(255, 0, 0);
+  rect(80, 250, 160, 100);
+  fill(100, 100, 255);
+  text("Small", 160, 305);
+  //The 200-pixel button
+  fill(255, 0, 0);
+  rect(320, 250, 160, 100);
+  fill(100, 100, 255);
+  text("Medium", 400, 305);
+  //The 300-pixel button
+  fill(255, 0, 0);
+  rect(560, 250, 160, 100);
+  fill(100, 100, 255);
+  text("Large", 640, 305);
+  //This ensures that the correct paddle width is returned after a button is selected
+  if (mousePressed==true && mouseX>80 && mouseX<240 && mouseY>250 && mouseY<350) {
+    return 100;
+  } else if (mousePressed && mouseX>320 && mouseX<480 && mouseY>250 && mouseY<350) {
+    return 200;
+  } else if (mousePressed && mouseX>560 && mouseX<720 && mouseY>250 && mouseY<350) {
+    return 300;
+  } else {
+    //If a button is not pressed, the function returns zero
+    return 0;
+  }
+}
